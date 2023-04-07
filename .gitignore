@@ -1,0 +1,6 @@
+checkpoint/
+__pycache__
+images/
+*.pyc
+runs/
+*.yaml
