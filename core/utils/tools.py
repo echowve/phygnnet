@@ -54,9 +54,9 @@ def modelTrainer(config):
             this_time = begin_time + delta_t*step
 
             value_last = graph.x.detach().clone()
-            predicted = model(graph)
-
             boundary_value = config.bc(graph.pos, this_time)
+            graph.x[on_boundary] = boundary_value
+            predicted = model(graph)
             # hard boundary
             predicted[on_boundary] = boundary_value[on_boundary]
 
@@ -102,12 +102,9 @@ def modelTester(config):
     def predictor(model, graph, step):
         this_time = begin_time + delta_t * step
 
-        T = torch.empty((graph.num_nodes, 1), device=graph.x.device)
-        T.fill_(delta_t)
-
+        boundary_value = config.bc(graph.pos, this_time)
+        graph.x[on_boundary] = boundary_value
         predicted = model(graph)
-
-        boundary_value = config.bc(pos=graph.pos, t=this_time)
         predicted[on_boundary] = boundary_value[on_boundary]
 
         return predicted
